@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">YayNay</string>
+    <string name="firebase_app_url">https://yaynay-15e5b.firebaseio.com</string>
+</resources>
