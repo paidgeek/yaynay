@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">YayNay</string>
-    <string name="firebase_app_url">https://yaynay-15e5b.firebaseio.com</string>
+    <string name="api_url">https://yaynay-1317.appspot.com/_ah/api</string>
 </resources>

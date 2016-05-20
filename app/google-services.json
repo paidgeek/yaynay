@@ -1,21 +1,19 @@
 {
   "project_info": {
-    "project_number": "950200370543",
-    "firebase_url": "https://yaynay-15e5b.firebaseio.com",
-    "project_id": "yaynay-15e5b",
-    "storage_bucket": "yaynay-15e5b.appspot.com"
+    "project_number": "253610533165",
+    "project_id": "yaynay-1317"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:950200370543:android:07dbcbdc470b1c8a",
+        "mobilesdk_app_id": "1:253610533165:android:07dbcbdc470b1c8a",
         "android_client_info": {
           "package_name": "com.moybl.yaynay"
         }
       },
       "oauth_client": [
         {
-          "client_id": "950200370543-2s3hnvbi25ec3iof2fe269d22hsfdenh.apps.googleusercontent.com",
+          "client_id": "253610533165-g2ga8ovr1e23bqmbjcg6n5cr3uctq9un.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.moybl.yaynay",
@@ -23,30 +21,35 @@
           }
         },
         {
-          "client_id": "950200370543-2j0tehr84mt493iblnn0sm46a2nf80nm.apps.googleusercontent.com",
+          "client_id": "253610533165-npoacdrnqhli5m2t5otg8pts862ena71.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyC022RBrAdQY66JL4BB_U9mRbreWZI9qUw"
+          "current_key": "AIzaSyAm_X6DvkYcuzvaB7iakko35TrBOJrb8sQ"
         }
       ],
       "services": {
         "analytics_service": {
-          "status": 1
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-78100136-1"
+          }
         },
         "appinvite_service": {
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "950200370543-2j0tehr84mt493iblnn0sm46a2nf80nm.apps.googleusercontent.com",
+              "client_id": "253610533165-npoacdrnqhli5m2t5otg8pts862ena71.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
         },
         "ads_service": {
-          "status": 2
+          "status": 2,
+          "test_banner_ad_unit_id": "ca-app-pub-3940256099942544/6300978111",
+          "test_interstitial_ad_unit_id": "ca-app-pub-3940256099942544/1033173712"
         }
       }
     }
