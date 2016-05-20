@@ -68,6 +68,8 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
 	private FirebaseRecyclerAdapter<FriendlyMessage, MessageViewHolder>
 			mFirebaseAdapter;
 
+	private FirebaseRemoteConfig mFirebaseRemoteConfig;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -117,7 +119,13 @@ public class HomeActivity extends AppCompatActivity implements GoogleApiClient.O
 		mSendButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				// Send messages on click.
+				FriendlyMessage friendlyMessage = new
+						FriendlyMessage(mMessageEditText.getText().toString(),
+						mUsername,
+						mPhotoUrl);
+				mFirebaseDatabaseReference.child(MESSAGES_CHILD)
+						.push().setValue(friendlyMessage);
+				mMessageEditText.setText("");
 			}
 		});
 
