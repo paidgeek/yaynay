@@ -4,6 +4,9 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.users.User;
 import com.google.appengine.repackaged.com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.appengine.repackaged.com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
@@ -59,6 +62,13 @@ public class YayNayEndpoint {
 				MyBean myBean = new MyBean();
 
 				myBean.setData(email + ", " + userId);
+
+				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+				Entity userEntity = new Entity("User");
+				userEntity.setProperty("googleId", userId);
+				userEntity.setProperty("email", email);
+
+				datastore.put(userEntity);
 
 				return myBean;
 			} else {
