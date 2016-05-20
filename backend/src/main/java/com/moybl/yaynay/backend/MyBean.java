@@ -1,15 +1,15 @@
 package com.moybl.yaynay.backend;
 
-/** The object model for the data we are sending through endpoints */
 public class MyBean {
 
-    private String myData;
+	private String data;
 
-    public String getData() {
-        return myData;
-    }
+	public void setData(String data) {
+		this.data = data;
+	}
 
-    public void setData(String data) {
-        myData = data;
-    }
+	public String getData() {
+		return data;
+	}
+
 }

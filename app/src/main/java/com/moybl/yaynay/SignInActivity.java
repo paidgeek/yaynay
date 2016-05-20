@@ -9,15 +9,19 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.plus.Plus;
+import com.google.android.gms.tasks.OnSuccessListener;
 
-import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.View;
+
+import com.moybl.yaynay.backend.ObjectResult;
+import com.moybl.yaynay.backend.YayNayClient;
+import com.moybl.yaynay.backend.YayNayResultCallback;
 
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -25,6 +29,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 	private static final int RC_SIGN_IN = 9001;
 
 	private GoogleApiClient mGoogleApiClient;
+	private YayNayClient mYayNayClient;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +38,8 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
 		GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
 				.requestEmail()
+				.requestIdToken(getString(R.string.web_client_id))
 				.build();
-
 		mGoogleApiClient = new GoogleApiClient.Builder(this)
 				.enableAutoManage(this, this)
 				.addApi(Auth.GOOGLE_SIGN_IN_API, gso)
@@ -65,8 +70,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 
 	private void updateButtonsAndStatusFromSignInResult(GoogleSignInResult result) {
 		if (result.isSuccess()) {
-			Intent intent = new Intent(this, HomeActivity.class);
-			startActivity(intent);
+			handleSuccessfulSignIn(result);
 		} else {
 			findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -86,17 +90,41 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		// Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
 		if (requestCode == RC_SIGN_IN) {
 			GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
 
 			Log.d(TAG, "handleSignInResult:" + result.isSuccess());
 
 			if (result.isSuccess()) {
-				Intent intent = new Intent(this, HomeActivity.class);
-				startActivity(intent);
+				handleSuccessfulSignIn(result);
 			}
 		}
+	}
+
+	private void handleSuccessfulSignIn(GoogleSignInResult result) {
+		GoogleSignInAccount account = result.getSignInAccount();
+		String idToken = account.getIdToken();
+
+		mYayNayClient = new YayNayClient.Builder(this)
+				.setIdToken(idToken)
+				.build();
+
+		mYayNayClient.signIn(new YayNayResultCallback<ObjectResult>() {
+			@Override
+			public void onResult(@NonNull ObjectResult result) {
+				if (result.isSuccess()) {
+					Log.d(TAG, result.getData()
+							.toString());
+				}
+			}
+		});
+
+/*		YayNay.getInstance()
+				.setGoogleAccount(result.getSignInAccount());
+
+		Intent intent = new Intent(this, HomeActivity.class);
+
+		startActivity(intent);*/
 	}
 
 	@Override

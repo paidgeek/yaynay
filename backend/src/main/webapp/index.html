@@ -81,7 +81,7 @@
             }
             else if (response.error) {
               outputAlertDiv.className = 'alert alert-danger';
-              outputAlertDiv.innerHTML = '<b>Error Code: </b>' + response.error.code + ' [' + response.error.message + ']';
+              outputAlertDiv.innerHTML = '<b>Error Code: </b>' + response.error.code + ' [' + response.error.data + ']';
             }
           }
         );

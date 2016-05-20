@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">YayNay</string>
     <string name="api_url">https://yaynay-1317.appspot.com/_ah/api</string>
+    <string name="web_client_id">253610533165-npoacdrnqhli5m2t5otg8pts862ena71.apps.googleusercontent.com</string>
 </resources>
