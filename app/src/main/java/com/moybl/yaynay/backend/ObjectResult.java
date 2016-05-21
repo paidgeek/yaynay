@@ -1,11 +1,11 @@
 package com.moybl.yaynay.backend;
 
-public class ObjectResult implements YayNayResult {
+public class ObjectResult<T> implements YayNayResult {
 
 	private boolean mIsSuccess;
-	private Object mData;
+	private T mData;
 
-	public ObjectResult(boolean isSuccess, Object data) {
+	public ObjectResult(boolean isSuccess, T data) {
 		mIsSuccess = isSuccess;
 		mData = data;
 	}
@@ -15,7 +15,7 @@ public class ObjectResult implements YayNayResult {
 		return mIsSuccess;
 	}
 
-	public Object getData() {
+	public T getObject() {
 		return mData;
 	}
 

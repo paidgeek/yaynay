@@ -4,21 +4,10 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.users.User;
-import com.google.appengine.repackaged.com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.appengine.repackaged.com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.appengine.repackaged.com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.appengine.repackaged.com.google.api.client.json.jackson.JacksonFactory;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.util.Collections;
 import java.util.logging.Logger;
-
-import javax.inject.Named;
 
 @Api(
 		name = "yayNayApi",
@@ -36,47 +25,39 @@ public class YayNayEndpoint {
 
 	private static final Logger log = Logger.getLogger(YayNayEndpoint.class.getName());
 
-	private GoogleIdTokenVerifier mTokenVerifier;
-
-	public YayNayEndpoint() {
-		mTokenVerifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
-				.setAudience(Collections.singletonList(Constants.ANDROID_AUDIENCE))
-				.setIssuer("https://accounts.google.com")
-				.build();
-	}
-
 	@ApiMethod(
 			name = "signIn",
-			httpMethod = ApiMethod.HttpMethod.GET)
-	public MyBean signIn(@Named("idToken") String idToken, User user)
+			httpMethod = ApiMethod.HttpMethod.GET,
+			authenticators = {GoogleUserAuthenticator.class})
+	public Asker signIn(User user)
 			throws UnauthorizedException, IOException {
-		try {
-			GoogleIdToken token = mTokenVerifier.verify(idToken);
-
-			if (token != null) {
-				GoogleIdToken.Payload payload = token.getPayload();
-
-				String userId = payload.getSubject();
-				String email = payload.getEmail();
-
-				MyBean myBean = new MyBean();
-
-				myBean.setData(email + ", " + userId);
-
-				DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-				Entity userEntity = new Entity("User");
-				userEntity.setProperty("googleId", userId);
-				userEntity.setProperty("email", email);
-
-				datastore.put(userEntity);
-
-				return myBean;
-			} else {
-				throw new UnauthorizedException("Invalid id token");
-			}
-		} catch (GeneralSecurityException e) {
-			throw new UnauthorizedException("Invalid id token");
+		if (user == null) {
+			throw new UnauthorizedException("Unauthorized");
 		}
+
+		String googleId = user.getUserId();
+		String email = user.getEmail();
+
+		Asker asker = OfyService.ofy()
+				.load()
+				.type(Asker.class)
+				.filter("googleId", googleId)
+				.first()
+				.now();
+
+		if (asker == null) {
+			asker = new Asker();
+
+			asker.setEmail(email);
+			asker.setGoogleId(googleId);
+
+			OfyService.ofy()
+					.save()
+					.entity(asker)
+					.now();
+		}
+
+		return asker;
 	}
 
 }

@@ -22,6 +22,7 @@ import android.view.View;
 import com.moybl.yaynay.backend.ObjectResult;
 import com.moybl.yaynay.backend.YayNayClient;
 import com.moybl.yaynay.backend.YayNayResultCallback;
+import com.moybl.yaynay.backend.yayNayApi.model.Asker;
 
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
@@ -109,12 +110,14 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 				.setIdToken(idToken)
 				.build();
 
-		mYayNayClient.signIn(new YayNayResultCallback<ObjectResult>() {
+		mYayNayClient.signIn(new YayNayResultCallback<ObjectResult<Asker>>() {
 			@Override
-			public void onResult(@NonNull ObjectResult result) {
+			public void onResult(@NonNull ObjectResult<Asker> result) {
 				if (result.isSuccess()) {
-					Log.d(TAG, result.getData()
-							.toString());
+					Asker asker = result.getObject();
+
+					Log.d(TAG, asker.getEmail());
+					Log.d(TAG, asker.getGoogleId());
 				}
 			}
 		});
