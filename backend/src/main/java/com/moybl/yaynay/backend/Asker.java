@@ -2,6 +2,7 @@ package com.moybl.yaynay.backend;
 
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ public class Asker {
 
 	@Id
 	private Long id;
-	private String googleId;
+	@Index
 	private String email;
 	private String name;
 	private String displayName;
@@ -24,14 +25,6 @@ public class Asker {
 
 	public Long getId() {
 		return id;
-	}
-
-	public String getGoogleId() {
-		return googleId;
-	}
-
-	public void setGoogleId(String googleId) {
-		this.googleId = googleId;
 	}
 
 	public String getEmail() {

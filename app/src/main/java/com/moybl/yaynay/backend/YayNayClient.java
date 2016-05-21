@@ -5,11 +5,9 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.moybl.yaynay.R;
 import com.moybl.yaynay.backend.yayNayApi.YayNayApi;
@@ -19,10 +17,20 @@ import java.io.IOException;
 
 public class YayNayClient {
 
-	private static YayNayApi yayNayApiService;
+	private static YayNayClient instance;
 
+	public synchronized static YayNayClient getInstance() {
+		if (instance == null) {
+			instance = new YayNayClient();
+		}
+
+		return instance;
+	}
+
+	private YayNayApi yayNayApiService;
 	private Context mContext;
 	private String mIdToken;
+	private Asker mAsker;
 
 	private YayNayClient() {
 	}
@@ -47,24 +55,44 @@ public class YayNayClient {
 
 			@Override
 			protected void onPostExecute(ObjectResult<Asker> result) {
-				Log.d("TOKEN", mIdToken);
-
+				mAsker = result.getObject();
 				callback.onResult(result);
 			}
 		}.execute();
 	}
 
+	public void ask(String question, final YayNayResultCallback<VoidResult> callback) {
+		new AsyncTask<String, Void, VoidResult>() {
+			@Override
+			protected VoidResult doInBackground(String... params) {
+				setUpService();
+
+				try {
+					yayNayApiService.ask(params[0])
+							.execute();
+
+					return new VoidResult(true);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+				return new VoidResult(false);
+			}
+
+			@Override
+			protected void onPostExecute(VoidResult result) {
+				callback.onResult(result);
+			}
+		}.execute(question);
+	}
+
 	private void setUpService() {
 		if (yayNayApiService == null) {
-			/*
-			String audience = "server:client_id:" + mContext.getString(R.string.web_client_id);
-			GoogleAccountCredential credential = GoogleAccountCredential.usingAudience(mContext, audience);
-			credential.setSelectedAccountName("tin.rabzelj@gmail.com");
-			*/
+			Credential credential = new Credential(BearerToken.authorizationHeaderAccessMethod())
+					.setFromTokenResponse(new TokenResponse().setAccessToken(mIdToken));
 
-			Credential credential = new Credential(BearerToken.authorizationHeaderAccessMethod()).setFromTokenResponse(new TokenResponse().setAccessToken(mIdToken));
-
-			YayNayApi.Builder builder = new YayNayApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), credential)
+			YayNayApi.Builder builder = new YayNayApi.Builder(AndroidHttp.newCompatibleTransport(),
+					new AndroidJsonFactory(), credential)
 					.setApplicationName(mContext.getPackageName())
 					.setRootUrl(mContext.getString(R.string.api_url));
 
@@ -72,26 +100,28 @@ public class YayNayClient {
 		}
 	}
 
-	public static class Builder {
+	public Context getContext() {
+		return mContext;
+	}
 
-		private YayNayClient mYayNayClient;
-		private Context mContext;
+	public void setContext(Context context) {
+		this.mContext = context;
+	}
 
-		public Builder(Context context) {
-			mYayNayClient = new YayNayClient();
-			mYayNayClient.mContext = context;
-		}
+	public String getIdToken() {
+		return mIdToken;
+	}
 
-		public Builder setIdToken(String idToken) {
-			mYayNayClient.mIdToken = idToken;
+	public void setIdToken(String idToken) {
+		this.mIdToken = idToken;
+	}
 
-			return this;
-		}
+	public Asker getAsker() {
+		return mAsker;
+	}
 
-		public YayNayClient build() {
-			return mYayNayClient;
-		}
-
+	public void setAsker(Asker asker) {
+		this.mAsker = asker;
 	}
 
 }

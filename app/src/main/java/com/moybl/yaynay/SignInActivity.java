@@ -30,7 +30,6 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 	private static final int RC_SIGN_IN = 9001;
 
 	private GoogleApiClient mGoogleApiClient;
-	private YayNayClient mYayNayClient;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -106,28 +105,20 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
 		GoogleSignInAccount account = result.getSignInAccount();
 		String idToken = account.getIdToken();
 
-		mYayNayClient = new YayNayClient.Builder(this)
-				.setIdToken(idToken)
-				.build();
+		YayNayClient yayNayClient = YayNayClient.getInstance();
+		yayNayClient.setContext(this);
+		yayNayClient.setIdToken(idToken);
 
-		mYayNayClient.signIn(new YayNayResultCallback<ObjectResult<Asker>>() {
+		yayNayClient.signIn(new YayNayResultCallback<ObjectResult<Asker>>() {
 			@Override
 			public void onResult(@NonNull ObjectResult<Asker> result) {
 				if (result.isSuccess()) {
-					Asker asker = result.getObject();
+					Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
 
-					Log.d(TAG, asker.getEmail());
-					Log.d(TAG, asker.getGoogleId());
+					startActivity(intent);
 				}
 			}
 		});
-
-/*		YayNay.getInstance()
-				.setGoogleAccount(result.getSignInAccount());
-
-		Intent intent = new Intent(this, HomeActivity.class);
-
-		startActivity(intent);*/
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.moybl.yaynay.backend;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
 
@@ -28,20 +29,19 @@ public class YayNayEndpoint {
 	@ApiMethod(
 			name = "signIn",
 			httpMethod = ApiMethod.HttpMethod.GET,
-			authenticators = {GoogleUserAuthenticator.class})
-	public Asker signIn(User user)
-			throws UnauthorizedException, IOException {
+			authenticators = GoogleUserAuthenticator.class
+	)
+	public Asker signIn(User user) throws UnauthorizedException, IOException {
 		if (user == null) {
 			throw new UnauthorizedException("Unauthorized");
 		}
 
-		String googleId = user.getUserId();
 		String email = user.getEmail();
 
 		Asker asker = OfyService.ofy()
 				.load()
 				.type(Asker.class)
-				.filter("googleId", googleId)
+				.filter("email", email)
 				.first()
 				.now();
 
@@ -49,7 +49,6 @@ public class YayNayEndpoint {
 			asker = new Asker();
 
 			asker.setEmail(email);
-			asker.setGoogleId(googleId);
 
 			OfyService.ofy()
 					.save()
@@ -58,6 +57,37 @@ public class YayNayEndpoint {
 		}
 
 		return asker;
+	}
+
+	@ApiMethod(
+			name = "ask",
+			httpMethod = ApiMethod.HttpMethod.POST,
+			authenticators = GoogleUserAuthenticator.class
+	)
+	public void ask(@Named("question") String text, User user) throws UnauthorizedException {
+		if (user == null) {
+			throw new UnauthorizedException("Unauthorized");
+		}
+
+		String email = user.getEmail();
+
+		Asker asker = OfyService.ofy()
+				.load()
+				.type(Asker.class)
+				.filter("email", email)
+				.first()
+				.now();
+
+		Question question = new Question();
+		question.setAskerId(asker.getId());
+		question.setText(text);
+
+		asker.setQuestionCount(asker.getQuestionCount() + 1);
+
+		OfyService.ofy()
+				.save()
+				.entities(question, asker)
+				.now();
 	}
 
 }
