@@ -10,10 +10,13 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.moybl.yaynay.R;
-import com.moybl.yaynay.backend.yayNayApi.YayNayApi;
-import com.moybl.yaynay.backend.yayNayApi.model.Asker;
+import com.moybl.yaynay.backend.accountApi.AccountApi;
+import com.moybl.yaynay.backend.accountApi.model.Asker;
+import com.moybl.yaynay.backend.questionApi.QuestionApi;
+import com.moybl.yaynay.backend.questionApi.model.Question;
 
 import java.io.IOException;
+import java.util.List;
 
 public class YayNayClient {
 
@@ -27,7 +30,8 @@ public class YayNayClient {
 		return instance;
 	}
 
-	private YayNayApi yayNayApiService;
+	private AccountApi accountApi;
+	private QuestionApi questionApi;
 	private Context mContext;
 	private String mIdToken;
 	private Asker mAsker;
@@ -42,15 +46,15 @@ public class YayNayClient {
 				setUpService();
 
 				try {
-					Asker asker = yayNayApiService.signIn()
+					Asker asker = accountApi.signIn()
 							.execute();
 
-					return new ObjectResult<>(true, asker);
+					return new ObjectResult<>(asker);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 
-				return new ObjectResult<>(false, null);
+				return new ObjectResult<>();
 			}
 
 			@Override
@@ -68,7 +72,7 @@ public class YayNayClient {
 				setUpService();
 
 				try {
-					yayNayApiService.ask(params[0])
+					questionApi.ask(params[0])
 							.execute();
 
 					return new VoidResult(true);
@@ -86,17 +90,48 @@ public class YayNayClient {
 		}.execute(question);
 	}
 
+	public void getMyQuestions(final YayNayResultCallback<ObjectResult<List<Question>>> callback) {
+		new AsyncTask<Void, Void, ObjectResult<List<Question>>>() {
+			@Override
+			protected ObjectResult<List<Question>> doInBackground(Void... params) {
+				setUpService();
+
+				try {
+					List<Question> questions = questionApi.getMyQuestions()
+							.execute()
+							.getItems();
+
+					return new ObjectResult<>(questions);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+				return new ObjectResult<>();
+			}
+
+			@Override
+			protected void onPostExecute(ObjectResult<List<Question>> result) {
+				callback.onResult(result);
+			}
+		}.execute();
+	}
+
 	private void setUpService() {
-		if (yayNayApiService == null) {
+		if (accountApi == null) {
 			Credential credential = new Credential(BearerToken.authorizationHeaderAccessMethod())
 					.setFromTokenResponse(new TokenResponse().setAccessToken(mIdToken));
 
-			YayNayApi.Builder builder = new YayNayApi.Builder(AndroidHttp.newCompatibleTransport(),
+			accountApi = new AccountApi.Builder(AndroidHttp.newCompatibleTransport(),
 					new AndroidJsonFactory(), credential)
 					.setApplicationName(mContext.getPackageName())
-					.setRootUrl(mContext.getString(R.string.api_url));
+					.setRootUrl(mContext.getString(R.string.api_url))
+					.build();
 
-			yayNayApiService = builder.build();
+			questionApi = new QuestionApi.Builder(AndroidHttp.newCompatibleTransport(),
+					new AndroidJsonFactory(), credential)
+					.setApplicationName(mContext.getPackageName())
+					.setRootUrl(mContext.getString(R.string.api_url))
+					.build();
 		}
 	}
 

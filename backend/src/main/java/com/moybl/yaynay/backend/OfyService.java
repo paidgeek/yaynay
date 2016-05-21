@@ -8,9 +8,7 @@ public class OfyService {
 
 	static {
 		ObjectifyService.register(Asker.class);
-		ObjectifyService.register(Follower.class);
 		ObjectifyService.register(Question.class);
-		ObjectifyService.register(QuestionFollower.class);
 	}
 
 	public static Objectify ofy() {

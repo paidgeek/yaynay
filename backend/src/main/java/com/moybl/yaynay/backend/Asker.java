@@ -17,11 +17,6 @@ public class Asker {
 	private String name;
 	private String displayName;
 	private int questionCount;
-	private List<Follower> followers;
-
-	public Asker() {
-		followers = new ArrayList<>();
-	}
 
 	public Long getId() {
 		return id;
@@ -57,10 +52,6 @@ public class Asker {
 
 	public void setQuestionCount(int questionCount) {
 		this.questionCount = questionCount;
-	}
-
-	public List<Follower> getFollowers() {
-		return followers;
 	}
 
 }

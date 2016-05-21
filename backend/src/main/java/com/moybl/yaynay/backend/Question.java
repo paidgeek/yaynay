@@ -2,6 +2,7 @@ package com.moybl.yaynay.backend;
 
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Index;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +15,8 @@ public class Question {
 	private String text;
 	private String askerName;
 	private String askerDisplayName;
+	@Index
 	private Long askerId;
-	private List<Follower> followers;
-
-	public Question() {
-		followers = new ArrayList<>();
-	}
 
 	public Long getId() {
 		return id;
@@ -57,7 +54,4 @@ public class Question {
 		this.askerId = askerId;
 	}
 
-	public List<Follower> getFollowers() {
-		return followers;
-	}
 }

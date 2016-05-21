@@ -5,8 +5,12 @@ public class ObjectResult<T> implements YayNayResult {
 	private boolean mIsSuccess;
 	private T mData;
 
-	public ObjectResult(boolean isSuccess, T data) {
-		mIsSuccess = isSuccess;
+	public ObjectResult() {
+		mIsSuccess = false;
+	}
+
+	public ObjectResult(T data) {
+		mIsSuccess = true;
 		mData = data;
 	}
 

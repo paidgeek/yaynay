@@ -9,8 +9,6 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.plus.Plus;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,7 +20,7 @@ import android.view.View;
 import com.moybl.yaynay.backend.ObjectResult;
 import com.moybl.yaynay.backend.YayNayClient;
 import com.moybl.yaynay.backend.YayNayResultCallback;
-import com.moybl.yaynay.backend.yayNayApi.model.Asker;
+import com.moybl.yaynay.backend.accountApi.model.Asker;
 
 public class SignInActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
