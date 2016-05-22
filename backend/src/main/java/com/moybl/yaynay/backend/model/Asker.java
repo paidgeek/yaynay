@@ -1,4 +1,4 @@
-package com.moybl.yaynay.backend;
+package com.moybl.yaynay.backend.model;
 
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -13,13 +13,23 @@ public class Asker {
 	@Id
 	private Long id;
 	@Index
+	private String googleId;
 	private String email;
 	private String name;
 	private String displayName;
-	private int questionCount;
+	private long questionCount = 0;
+	private String sessionToken;
 
 	public Long getId() {
 		return id;
+	}
+
+	public String getGoogleId() {
+		return googleId;
+	}
+
+	public void setGoogleId(String googleId) {
+		this.googleId = googleId;
 	}
 
 	public String getEmail() {
@@ -46,12 +56,20 @@ public class Asker {
 		this.displayName = displayName;
 	}
 
-	public int getQuestionCount() {
+	public long getQuestionCount() {
 		return questionCount;
 	}
 
-	public void setQuestionCount(int questionCount) {
+	public void setQuestionCount(long questionCount) {
 		this.questionCount = questionCount;
+	}
+
+	public String getSessionToken() {
+		return sessionToken;
+	}
+
+	public void setSessionToken(String sessionToken) {
+		this.sessionToken = sessionToken;
 	}
 
 }

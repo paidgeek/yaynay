@@ -3,6 +3,8 @@ package com.moybl.yaynay.backend;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
+import com.moybl.yaynay.backend.model.Asker;
+import com.moybl.yaynay.backend.model.Question;
 
 public class OfyService {
 

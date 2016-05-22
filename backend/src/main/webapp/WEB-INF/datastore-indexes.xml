@@ -5,4 +5,8 @@
         <property name="askerId" direction="asc"/>
         <property name="askedAt" direction="desc"/>
     </datastore-index>
+    <datastore-index kind="Answer" ancestor="false" source="manual">
+        <property name="questionId" direction="asc"/>
+        <property name="askerId" direction="asc"/>
+    </datastore-index>
 </datastore-indexes>

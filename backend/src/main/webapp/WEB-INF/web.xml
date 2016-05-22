@@ -6,8 +6,9 @@
         <init-param>
             <param-name>services</param-name>
             <param-value>
-                com.moybl.yaynay.backend.AccountEndpoint,
-                com.moybl.yaynay.backend.QuestionEndpoint
+                com.moybl.yaynay.backend.AskersEndpoint,
+                com.moybl.yaynay.backend.QuestionsEndpoint,
+                com.moybl.yaynay.backend.AnswerEndpoint
             </param-value>
         </init-param>
     </servlet>

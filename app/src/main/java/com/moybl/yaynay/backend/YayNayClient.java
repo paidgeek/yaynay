@@ -10,10 +10,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.moybl.yaynay.R;
-import com.moybl.yaynay.backend.accountApi.AccountApi;
-import com.moybl.yaynay.backend.accountApi.model.Asker;
-import com.moybl.yaynay.backend.questionApi.QuestionApi;
-import com.moybl.yaynay.backend.questionApi.model.Question;
+import com.moybl.yaynay.backend.yaynayService.YaynayService;
+import com.moybl.yaynay.backend.yaynayService.model.Asker;
+import com.moybl.yaynay.backend.yaynayService.model.Question;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,8 +29,7 @@ public class YayNayClient {
 		return instance;
 	}
 
-	private AccountApi accountApi;
-	private QuestionApi questionApi;
+	private YaynayService yaynayService;
 	private Context mContext;
 	private String mIdToken;
 	private Asker mAsker;
@@ -40,13 +38,11 @@ public class YayNayClient {
 	}
 
 	public void signIn(final YayNayResultCallback<ObjectResult<Asker>> callback) {
-		new AsyncTask<Void, Void, ObjectResult<Asker>>() {
+		doServiceCall(new ServiceCall<ObjectResult<Asker>>() {
 			@Override
-			protected ObjectResult<Asker> doInBackground(Void... params) {
-				setUpService();
-
+			public ObjectResult<Asker> procedure() {
 				try {
-					Asker asker = accountApi.signIn()
+					Asker asker = yaynayService.signIn()
 							.execute();
 
 					return new ObjectResult<>(asker);
@@ -58,21 +54,20 @@ public class YayNayClient {
 			}
 
 			@Override
-			protected void onPostExecute(ObjectResult<Asker> result) {
+			public void finished(ObjectResult<Asker> result) {
 				mAsker = result.getObject();
 				callback.onResult(result);
 			}
-		}.execute();
+		});
 	}
 
-	public void ask(String question, final YayNayResultCallback<VoidResult> callback) {
-		new AsyncTask<String, Void, VoidResult>() {
+	public void postQuestion(final String question, final YayNayResultCallback<VoidResult> callback) {
+		doServiceCall(new ServiceCall<VoidResult>() {
 			@Override
-			protected VoidResult doInBackground(String... params) {
-				setUpService();
-
+			public VoidResult procedure() {
 				try {
-					questionApi.ask(params[0])
+					yaynayService.questions()
+							.post(question)
 							.execute();
 
 					return new VoidResult(true);
@@ -84,20 +79,24 @@ public class YayNayClient {
 			}
 
 			@Override
-			protected void onPostExecute(VoidResult result) {
+			public void finished(VoidResult result) {
 				callback.onResult(result);
 			}
-		}.execute(question);
+		});
 	}
 
-	public void getMyQuestions(final YayNayResultCallback<ObjectResult<List<Question>>> callback) {
-		new AsyncTask<Void, Void, ObjectResult<List<Question>>>() {
-			@Override
-			protected ObjectResult<List<Question>> doInBackground(Void... params) {
-				setUpService();
+	public void asker(final YayNayResultCallback<ObjectResult<List<Question>>> callback) {
+		asker(null, callback);
+	}
 
+	public void asker(final Long askerId, final YayNayResultCallback<ObjectResult<List<Question>>> callback) {
+		doServiceCall(new ServiceCall<ObjectResult<List<Question>>>() {
+			@Override
+			public ObjectResult<List<Question>> procedure() {
 				try {
-					List<Question> questions = questionApi.getMyQuestions()
+					List<Question> questions = yaynayService.questions()
+							.asker()
+							.setAskerId(askerId)
 							.execute()
 							.getItems();
 
@@ -110,24 +109,67 @@ public class YayNayClient {
 			}
 
 			@Override
-			protected void onPostExecute(ObjectResult<List<Question>> result) {
+			public void finished(ObjectResult<List<Question>> result) {
 				callback.onResult(result);
 			}
-		}.execute();
+		});
+	}
+
+	public void feed(final YayNayResultCallback<ObjectResult<List<Question>>> callback) {
+		doServiceCall(new ServiceCall<ObjectResult<List<Question>>>() {
+			@Override
+			public ObjectResult<List<Question>> procedure() {
+				try {
+					List<Question> questions = yaynayService.questions()
+							.feed()
+							.execute()
+							.getItems();
+
+					return new ObjectResult<>(questions);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+				return new ObjectResult<>();
+			}
+
+			@Override
+			public void finished(ObjectResult<List<Question>> result) {
+				callback.onResult(result);
+			}
+		});
+	}
+
+	public void postAnswer(final long questionId, final boolean state, final YayNayResultCallback<VoidResult> callback) {
+		doServiceCall(new ServiceCall<VoidResult>() {
+			@Override
+			public VoidResult procedure() {
+				try {
+					yaynayService.answers()
+							.post(questionId, state)
+							.execute();
+
+					return new VoidResult(true);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+				return new VoidResult(false);
+			}
+
+			@Override
+			public void finished(VoidResult result) {
+				callback.onResult(result);
+			}
+		});
 	}
 
 	private void setUpService() {
-		if (accountApi == null) {
+		if (yaynayService == null) {
 			Credential credential = new Credential(BearerToken.authorizationHeaderAccessMethod())
 					.setFromTokenResponse(new TokenResponse().setAccessToken(mIdToken));
 
-			accountApi = new AccountApi.Builder(AndroidHttp.newCompatibleTransport(),
-					new AndroidJsonFactory(), credential)
-					.setApplicationName(mContext.getPackageName())
-					.setRootUrl(mContext.getString(R.string.api_url))
-					.build();
-
-			questionApi = new QuestionApi.Builder(AndroidHttp.newCompatibleTransport(),
+			yaynayService = new YaynayService.Builder(AndroidHttp.newCompatibleTransport(),
 					new AndroidJsonFactory(), credential)
 					.setApplicationName(mContext.getPackageName())
 					.setRootUrl(mContext.getString(R.string.api_url))
@@ -157,6 +199,27 @@ public class YayNayClient {
 
 	public void setAsker(Asker asker) {
 		this.mAsker = asker;
+	}
+
+	private interface ServiceCall<T> {
+		T procedure();
+
+		void finished(T result);
+	}
+
+	private <T> void doServiceCall(final ServiceCall<T> serviceCall) {
+		new AsyncTask<Void, Void, T>() {
+			@Override
+			protected T doInBackground(Void... params) {
+				setUpService();
+				return serviceCall.procedure();
+			}
+
+			@Override
+			protected void onPostExecute(T result) {
+				serviceCall.finished(result);
+			}
+		}.execute();
 	}
 
 }

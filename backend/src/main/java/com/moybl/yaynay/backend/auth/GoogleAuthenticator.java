@@ -1,4 +1,4 @@
-package com.moybl.yaynay.backend;
+package com.moybl.yaynay.backend.auth;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
@@ -7,19 +7,17 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Authenticator;
 
+import com.moybl.yaynay.backend.Constants;
+
 import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class GoogleUserAuthenticator implements Authenticator {
-
-	private static final Logger log = Logger.getLogger(GoogleUserAuthenticator.class.getName());
+public class GoogleAuthenticator implements Authenticator {
 
 	private GoogleIdTokenVerifier verifier;
 
-	public GoogleUserAuthenticator() {
+	public GoogleAuthenticator() {
 		verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
 				.setAudience(Collections.singletonList(Constants.ANDROID_AUDIENCE))
 				.setIssuer("https://accounts.google.com")

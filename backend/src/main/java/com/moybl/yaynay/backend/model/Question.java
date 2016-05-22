@@ -1,4 +1,4 @@
-package com.moybl.yaynay.backend;
+package com.moybl.yaynay.backend.model;
 
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -18,6 +18,8 @@ public class Question {
 	private String askerDisplayName;
 	@Index
 	private Long askerId;
+	private long yayCount = 0;
+	private long nayCount = 0;
 
 	public Long getId() {
 		return id;
@@ -61,6 +63,22 @@ public class Question {
 
 	public void setAskerId(Long askerId) {
 		this.askerId = askerId;
+	}
+
+	public long getNayCount() {
+		return nayCount;
+	}
+
+	public void setNayCount(long nayCount) {
+		this.nayCount = nayCount;
+	}
+
+	public Long getYayCount() {
+		return yayCount;
+	}
+
+	public void setYayCount(Long yayCount) {
+		this.yayCount = yayCount;
 	}
 
 }

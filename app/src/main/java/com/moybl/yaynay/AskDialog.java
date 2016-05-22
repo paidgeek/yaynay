@@ -28,7 +28,7 @@ public class AskDialog extends DialogFragment {
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 
-		final View view = inflater.inflate(R.layout.dialog_ask, null);
+		final View view = inflater.inflate(R.layout.ask_dialog, null);
 
 		builder.setView(view)
 				.setPositiveButton(R.string.ask, new DialogInterface.OnClickListener() {
