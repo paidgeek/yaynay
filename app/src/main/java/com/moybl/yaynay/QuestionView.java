@@ -8,10 +8,10 @@ import android.widget.TextView;
 public class QuestionView extends RecyclerView.ViewHolder {
 
 	private TextView mTextView;
-	private Button mYayButton;
-	private Button mNayButton;
+	private View mYayButton;
+	private View mNayButton;
 
-	public QuestionView(View itemView, TextView text, Button yayButton, Button nayButton) {
+	public QuestionView(View itemView, TextView text, View yayButton, View nayButton) {
 		super(itemView);
 
 		mTextView = text;
@@ -23,11 +23,11 @@ public class QuestionView extends RecyclerView.ViewHolder {
 		return mTextView;
 	}
 
-	public Button getNayButton() {
+	public View getNayButton() {
 		return mNayButton;
 	}
 
-	public Button getYayButton() {
+	public View getYayButton() {
 		return mYayButton;
 	}
 

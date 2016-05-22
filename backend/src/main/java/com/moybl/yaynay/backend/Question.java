@@ -4,14 +4,15 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Index;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
 @Entity
 public class Question {
 
 	@Id
 	private Long id;
+	@Index
+	private Date askedAt;
 	private String text;
 	private String askerName;
 	private String askerDisplayName;
@@ -20,6 +21,14 @@ public class Question {
 
 	public Long getId() {
 		return id;
+	}
+
+	public Date getAskedAt() {
+		return askedAt;
+	}
+
+	public void setAskedAt(Date askedAt) {
+		this.askedAt = askedAt;
 	}
 
 	public String getText() {

@@ -27,20 +27,22 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-            <Button
+            <ImageButton
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/yay"
+                    android:layout_height="50dp"
                     android:id="@+id/question_button_yay"
                     android:layout_weight="1"
-                    style="?android:attr/borderlessButtonStyle"/>
-            <Button
+                    android:src="@drawable/yay"
+                    android:tint="@android:color/black"
+                    style="?android:attr/borderlessButtonStyle" android:scaleType="centerInside"/>
+            <ImageButton
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/nay"
+                    android:layout_height="50dp"
                     android:id="@+id/question_button_nay"
                     android:layout_weight="1"
-                    style="?android:attr/borderlessButtonStyle"/>
+                    android:src="@drawable/nay"
+                    android:tint="@android:color/black"
+                    style="?android:attr/borderlessButtonStyle" android:scaleType="centerInside"/>
         </LinearLayout>
     </LinearLayout>
 

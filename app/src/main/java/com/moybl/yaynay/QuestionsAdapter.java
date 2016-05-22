@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.moybl.yaynay.backend.questionApi.model.Question;
@@ -30,8 +31,8 @@ public class QuestionsAdapter extends RecyclerView.Adapter<QuestionView> {
 				.inflate(R.layout.layout_question, parent, false);
 
 		TextView text = (TextView) v.findViewById(R.id.question_text);
-		Button yayButton = (Button) v.findViewById(R.id.question_button_yay);
-		Button nayButton = (Button) v.findViewById(R.id.question_button_nay);
+		View yayButton = v.findViewById(R.id.question_button_yay);
+		View nayButton = v.findViewById(R.id.question_button_nay);
 
 		QuestionView vh = new QuestionView(v, text, yayButton, nayButton);
 

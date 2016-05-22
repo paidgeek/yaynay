@@ -15,6 +15,7 @@ import com.google.appengine.api.users.User;
 import com.googlecode.objectify.cmd.Query;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -52,6 +53,7 @@ public class QuestionEndpoint {
 				.now();
 
 		Question question = new Question();
+		question.setAskedAt(new Date());
 		question.setAskerId(asker.getId());
 		question.setText(text);
 
@@ -86,6 +88,7 @@ public class QuestionEndpoint {
 				.load()
 				.type(Question.class)
 				.filter("askerId", askerId)
+				.order("-askedAt")
 				.limit(10);
 
 		if (cursorString != null) {
