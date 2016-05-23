@@ -7,13 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import com.moybl.yaynay.backend.ObjectResult;
 import com.moybl.yaynay.backend.VoidResult;
 import com.moybl.yaynay.backend.YayNayClient;
 import com.moybl.yaynay.backend.YayNayResultCallback;
-import com.moybl.yaynay.backend.yaynayService.model.Question;
+import com.moybl.yaynay.backend.yayNay.model.Question;
 
 import java.util.List;
 
@@ -70,7 +69,7 @@ public class HomeActivity extends AppCompatActivity {
 	}
 
 	private void refreshQuestions() {
-		mClient.asker(new YayNayResultCallback<ObjectResult<List<Question>>>() {
+		mClient.listByAsker(new YayNayResultCallback<ObjectResult<List<Question>>>() {
 			@Override
 			public void onResult(@NonNull ObjectResult<List<Question>> result) {
 				if (result.isSuccess()) {
@@ -88,7 +87,7 @@ public class HomeActivity extends AppCompatActivity {
 	}
 
 	private void ask(String question) {
-		mClient.postQuestion(question, new YayNayResultCallback<VoidResult>() {
+		mClient.insertQuestion(question, new YayNayResultCallback<VoidResult>() {
 			@Override
 			public void onResult(@NonNull VoidResult result) {
 			}

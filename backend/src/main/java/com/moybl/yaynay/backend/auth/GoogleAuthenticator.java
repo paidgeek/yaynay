@@ -40,7 +40,7 @@ public class GoogleAuthenticator implements Authenticator {
 					return null;
 				}
 
-				return new User(id, email);
+				return new AuthUser(id, email);
 			} catch (Exception ignored) {
 			}
 		}

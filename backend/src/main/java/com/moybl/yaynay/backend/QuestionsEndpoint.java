@@ -7,13 +7,16 @@ import com.google.api.server.spi.response.CollectionResponse;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.datastore.Cursor;
 import com.google.appengine.api.datastore.QueryResultIterator;
-import com.google.appengine.api.users.User;
+import com.google.api.server.spi.auth.common.User;
 
 import com.googlecode.objectify.cmd.Query;
+import com.moybl.yaynay.backend.auth.AuthUser;
+import com.moybl.yaynay.backend.auth.YayNayAuthenticator;
 import com.moybl.yaynay.backend.model.Asker;
 import com.moybl.yaynay.backend.model.Question;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -24,19 +27,16 @@ public class QuestionsEndpoint extends YayNayEndpoint {
 
 	@ApiMethod(
 			name = "questions.insert",
-			httpMethod = ApiMethod.HttpMethod.POST
+			httpMethod = ApiMethod.HttpMethod.POST,
+			authenticators = YayNayAuthenticator.class
 	)
-	public void insert(User user, @Named("question") String text) throws UnauthorizedException {
+	public void insert(User user, @Named("question") String text)
+			throws UnauthorizedException {
 		if (user == null) {
 			throw new UnauthorizedException("Unauthorized");
 		}
 
-		Asker asker = OfyService.ofy()
-				.load()
-				.type(Asker.class)
-				.filter("googleId", user.getUserId())
-				.first()
-				.now();
+		Asker asker = ((AuthUser) user).getAsker();
 
 		Question question = new Question();
 		question.setAskedAt(new Date());
@@ -52,24 +52,15 @@ public class QuestionsEndpoint extends YayNayEndpoint {
 	}
 
 	@ApiMethod(
-			name = "questions.list",
-			httpMethod = ApiMethod.HttpMethod.GET
+			name = "questions.feed",
+			httpMethod = ApiMethod.HttpMethod.GET,
+			authenticators = YayNayAuthenticator.class
 	)
-	public CollectionResponse<Question> list(User user, @Nullable @Named("cursor") String cursorString) throws UnauthorizedException {
+	public CollectionResponse<Question> feed(User user, @Nullable @Named("cursor") String cursorString)
+			throws UnauthorizedException {
 		if (user == null) {
 			throw new UnauthorizedException("Unauthorized");
 		}
-
-		/*
-		Long askerId = OfyService.ofy()
-				.load()
-				.type(Asker.class)
-				.filter("email", user.getEmail())
-				.keys()
-				.first()
-				.now()
-				.getId();
-		*/
 
 		Query<Question> query = OfyService.ofy()
 				.load()
@@ -95,25 +86,20 @@ public class QuestionsEndpoint extends YayNayEndpoint {
 				.setNextPageToken(cursor.toWebSafeString())
 				.build();
 	}
-/*
+
 	@ApiMethod(
-			name = "questions.listByUser",
+			name = "questions.listByAsker",
 			httpMethod = ApiMethod.HttpMethod.GET,
-			authenticators = GoogleUserAuthenticator.class
+			authenticators = YayNayAuthenticator.class
 	)
-	public CollectionResponse<Question> getQuestionsByUser(@Nullable @Named("askerId") Long askerId, @Nullable @Named("cursor") String cursorString, User user) throws UnauthorizedException {
+	public CollectionResponse<Question> listByAsker(@Nullable @Named("askerId") Long askerId, @Nullable @Named("cursor") String cursorString, User user)
+			throws UnauthorizedException {
 		if (user == null) {
 			throw new UnauthorizedException("Unauthorized");
 		}
 
 		if (askerId == null) {
-			askerId = OfyService.ofy()
-					.load()
-					.type(Asker.class)
-					.filter("googleId", user.getUserId())
-					.keys()
-					.first()
-					.now()
+			askerId = ((AuthUser) user).getAsker()
 					.getId();
 		}
 
@@ -142,5 +128,5 @@ public class QuestionsEndpoint extends YayNayEndpoint {
 				.setNextPageToken(cursor.toWebSafeString())
 				.build();
 	}
-*/
+
 }

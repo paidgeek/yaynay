@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.moybl.yaynay.backend.yaynayService.model.Question;
+import com.moybl.yaynay.backend.yayNay.model.Question;
 
 import java.util.ArrayList;
 import java.util.List;

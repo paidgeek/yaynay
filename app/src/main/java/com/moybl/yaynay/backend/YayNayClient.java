@@ -5,16 +5,21 @@ import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
+import com.google.api.client.http.HttpHeaders;
 
 import android.content.Context;
 import android.os.AsyncTask;
 
 import com.moybl.yaynay.R;
-import com.moybl.yaynay.backend.yaynayService.YaynayService;
-import com.moybl.yaynay.backend.yaynayService.model.Asker;
-import com.moybl.yaynay.backend.yaynayService.model.Question;
+import com.moybl.yaynay.backend.yayNay.YayNay;
+import com.moybl.yaynay.backend.yayNay.model.Asker;
+import com.moybl.yaynay.backend.yayNay.model.Question;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class YayNayClient {
@@ -29,20 +34,27 @@ public class YayNayClient {
 		return instance;
 	}
 
-	private YaynayService yaynayService;
+	private YayNay mYayNay;
 	private Context mContext;
 	private String mIdToken;
 	private Asker mAsker;
 
-	private YayNayClient() {
-	}
-
-	public void signIn(final YayNayResultCallback<ObjectResult<Asker>> callback) {
+	public void insertGoogle(final YayNayResultCallback<ObjectResult<Asker>> callback) {
 		doServiceCall(new ServiceCall<ObjectResult<Asker>>() {
 			@Override
 			public ObjectResult<Asker> procedure() {
 				try {
-					Asker asker = yaynayService.signIn()
+					Credential credential = new Credential(BearerToken.authorizationHeaderAccessMethod())
+							.setFromTokenResponse(new TokenResponse().setAccessToken(mIdToken));
+
+					YayNay yayNay = new YayNay.Builder(AndroidHttp.newCompatibleTransport(),
+							new AndroidJsonFactory(), credential)
+							.setApplicationName(mContext.getPackageName())
+							.setRootUrl(mContext.getString(R.string.api_url))
+							.build();
+
+					Asker asker = yayNay.askers()
+							.insertGoogle()
 							.execute();
 
 					return new ObjectResult<>(asker);
@@ -56,18 +68,19 @@ public class YayNayClient {
 			@Override
 			public void finished(ObjectResult<Asker> result) {
 				mAsker = result.getObject();
+				createAuthenticatedClient();
 				callback.onResult(result);
 			}
 		});
 	}
 
-	public void postQuestion(final String question, final YayNayResultCallback<VoidResult> callback) {
+	public void insertQuestion(final String question, final YayNayResultCallback<VoidResult> callback) {
 		doServiceCall(new ServiceCall<VoidResult>() {
 			@Override
 			public VoidResult procedure() {
 				try {
-					yaynayService.questions()
-							.post(question)
+					mYayNay.questions()
+							.insert(question)
 							.execute();
 
 					return new VoidResult(true);
@@ -85,20 +98,24 @@ public class YayNayClient {
 		});
 	}
 
-	public void asker(final YayNayResultCallback<ObjectResult<List<Question>>> callback) {
-		asker(null, callback);
+	public void listByAsker(final YayNayResultCallback<ObjectResult<List<Question>>> callback) {
+		listByAsker(null, callback);
 	}
 
-	public void asker(final Long askerId, final YayNayResultCallback<ObjectResult<List<Question>>> callback) {
+	public void listByAsker(final Long askerId, final YayNayResultCallback<ObjectResult<List<Question>>> callback) {
 		doServiceCall(new ServiceCall<ObjectResult<List<Question>>>() {
 			@Override
 			public ObjectResult<List<Question>> procedure() {
 				try {
-					List<Question> questions = yaynayService.questions()
-							.asker()
+					List<Question> questions = mYayNay.questions()
+							.listByAsker()
 							.setAskerId(askerId)
 							.execute()
 							.getItems();
+
+					if (questions == null) {
+						questions = Collections.emptyList();
+					}
 
 					return new ObjectResult<>(questions);
 				} catch (IOException e) {
@@ -120,10 +137,14 @@ public class YayNayClient {
 			@Override
 			public ObjectResult<List<Question>> procedure() {
 				try {
-					List<Question> questions = yaynayService.questions()
+					List<Question> questions = mYayNay.questions()
 							.feed()
 							.execute()
 							.getItems();
+
+					if (questions == null) {
+						questions = Collections.emptyList();
+					}
 
 					return new ObjectResult<>(questions);
 				} catch (IOException e) {
@@ -140,13 +161,13 @@ public class YayNayClient {
 		});
 	}
 
-	public void postAnswer(final long questionId, final boolean state, final YayNayResultCallback<VoidResult> callback) {
+	public void insertAnswer(final long questionId, final boolean state, final YayNayResultCallback<VoidResult> callback) {
 		doServiceCall(new ServiceCall<VoidResult>() {
 			@Override
 			public VoidResult procedure() {
 				try {
-					yaynayService.answers()
-							.post(questionId, state)
+					mYayNay.answers()
+							.insert(questionId, state)
 							.execute();
 
 					return new VoidResult(true);
@@ -164,17 +185,25 @@ public class YayNayClient {
 		});
 	}
 
-	private void setUpService() {
-		if (yaynayService == null) {
-			Credential credential = new Credential(BearerToken.authorizationHeaderAccessMethod())
-					.setFromTokenResponse(new TokenResponse().setAccessToken(mIdToken));
-
-			yaynayService = new YaynayService.Builder(AndroidHttp.newCompatibleTransport(),
-					new AndroidJsonFactory(), credential)
-					.setApplicationName(mContext.getPackageName())
-					.setRootUrl(mContext.getString(R.string.api_url))
-					.build();
+	private void createAuthenticatedClient() {
+		if (mAsker == null) {
+			return;
 		}
+
+		mYayNay = new YayNay.Builder(AndroidHttp.newCompatibleTransport(),
+				new AndroidJsonFactory(), null)
+				.setApplicationName(mContext.getPackageName())
+				.setRootUrl(mContext.getString(R.string.api_url))
+				.setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+					@Override
+					public void initialize(AbstractGoogleClientRequest<?> request) throws IOException {
+						HttpHeaders headers = request.getRequestHeaders();
+						headers.set("X-ASKER-ID", mAsker.getId());
+						headers.set("X-SESSION-TOKEN", mAsker.getSessionToken());
+						request.setRequestHeaders(headers);
+					}
+				})
+				.build();
 	}
 
 	public Context getContext() {
@@ -211,7 +240,6 @@ public class YayNayClient {
 		new AsyncTask<Void, Void, T>() {
 			@Override
 			protected T doInBackground(Void... params) {
-				setUpService();
 				return serviceCall.procedure();
 			}
 

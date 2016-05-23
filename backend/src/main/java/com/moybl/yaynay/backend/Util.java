@@ -6,7 +6,7 @@ import java.security.SecureRandom;
 
 public class Util {
 
-	private static final int SESSION_TOKEN_BYTES = 180;
+	private static final int SESSION_TOKEN_BYTES = 128;
 	private static final SecureRandom random = new SecureRandom();
 
 	public static String generateSessionToken() {

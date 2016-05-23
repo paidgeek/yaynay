@@ -1,25 +1,25 @@
 package com.moybl.yaynay.backend;
 
+import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.response.UnauthorizedException;
-import com.google.appengine.api.users.User;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
 
-import com.googlecode.objectify.Key;
 import com.moybl.yaynay.backend.auth.GoogleAuthenticator;
 import com.moybl.yaynay.backend.model.Asker;
 
 import java.io.IOException;
-import java.util.UUID;
-import java.util.logging.Logger;
 
 public class AskersEndpoint extends YayNayEndpoint {
 
-	private static final Logger log = Logger.getLogger(AskersEndpoint.class.getName());
-
 	@ApiMethod(
 			name = "askers.insertGoogle",
-			httpMethod = ApiMethod.HttpMethod.POST
-			//authenticators = GoogleAuthenticator.class
+			httpMethod = ApiMethod.HttpMethod.POST,
+			authenticators = GoogleAuthenticator.class
 	)
 	public Asker insertGoogle(User user) throws UnauthorizedException, IOException {
 		if (user == null) {
@@ -29,14 +29,14 @@ public class AskersEndpoint extends YayNayEndpoint {
 		Asker asker = OfyService.ofy()
 				.load()
 				.type(Asker.class)
-				.filter("googleId", user.getUserId())
+				.filter("googleId", user.getId())
 				.first()
 				.now();
 
 		if (asker == null) {
 			asker = new Asker();
 
-			asker.setGoogleId(user.getUserId());
+			asker.setGoogleId(user.getId());
 			asker.setEmail(user.getEmail());
 		}
 

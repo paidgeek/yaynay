@@ -19,7 +19,7 @@ import android.view.View;
 import com.moybl.yaynay.backend.ObjectResult;
 import com.moybl.yaynay.backend.YayNayClient;
 import com.moybl.yaynay.backend.YayNayResultCallback;
-import com.moybl.yaynay.backend.yaynayService.model.Asker;
+import com.moybl.yaynay.backend.yayNay.model.Asker;
 
 import java.util.logging.Logger;
 
@@ -103,7 +103,7 @@ public class SignInActivity extends AppCompatActivity {
 		yayNayClient.setContext(this);
 		yayNayClient.setIdToken(idToken);
 
-		yayNayClient.signIn(new YayNayResultCallback<ObjectResult<Asker>>() {
+		yayNayClient.insertGoogle(new YayNayResultCallback<ObjectResult<Asker>>() {
 			@Override
 			public void onResult(@NonNull ObjectResult<Asker> result) {
 				if (result.isSuccess()) {
