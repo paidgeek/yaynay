@@ -33,10 +33,7 @@ public class YayNayAuthenticator implements Authenticator {
 			return null;
 		}
 
-		AuthUser user = new AuthUser(askerId);
-		user.setAsker(asker);
-
-		return user;
+		return new AskerUser(asker);
 	}
 
 }

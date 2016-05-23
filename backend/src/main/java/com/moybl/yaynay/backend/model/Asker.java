@@ -17,6 +17,7 @@ public class Asker {
 	private String email;
 	private String name;
 	private String displayName;
+	private String picture;
 	private long questionCount = 0;
 	private String sessionToken;
 
@@ -54,6 +55,14 @@ public class Asker {
 
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
+	}
+
+	public String getPicture() {
+		return picture;
+	}
+
+	public void setPicture(String picture) {
+		this.picture = picture;
 	}
 
 	public long getQuestionCount() {

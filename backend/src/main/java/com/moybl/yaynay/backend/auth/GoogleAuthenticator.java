@@ -8,6 +8,7 @@ import com.google.api.server.spi.auth.common.User;
 import com.google.api.server.spi.config.Authenticator;
 
 import com.moybl.yaynay.backend.Constants;
+import com.moybl.yaynay.backend.model.Asker;
 
 import java.util.Collections;
 
@@ -35,12 +36,20 @@ public class GoogleAuthenticator implements Authenticator {
 
 				String id = payload.getSubject();
 				String email = payload.getEmail();
+				String name = (String) payload.get("name");
+				String picture = (String) payload.get("picture");
 
 				if (id == null || email == null) {
 					return null;
 				}
 
-				return new AuthUser(id, email);
+				Asker asker = new Asker();
+				asker.setGoogleId(id);
+				asker.setEmail(email);
+				asker.setDisplayName(name);
+				asker.setPicture(picture);
+
+				return new AskerUser(asker);
 			} catch (Exception ignored) {
 			}
 		}

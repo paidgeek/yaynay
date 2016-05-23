@@ -3,14 +3,18 @@ package com.moybl.yaynay.view;
 import com.google.api.client.util.DateTime;
 
 import android.databinding.Bindable;
+import android.databinding.BindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.databinding.Observable;
 import android.databinding.PropertyChangeRegistry;
 import android.databinding.ViewDataBinding;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 
+import com.moybl.yaynay.R;
 import com.moybl.yaynay.backend.yayNay.model.Question;
+import com.squareup.picasso.Picasso;
 
 public class QuestionViewModel extends RecyclerView.ViewHolder implements Observable {
 
@@ -50,6 +54,21 @@ public class QuestionViewModel extends RecyclerView.ViewHolder implements Observ
 		return mQuestion.getText();
 	}
 
+	@Bindable
+	public String getAskerDisplayName() {
+		return mQuestion.getAskerDisplayName();
+	}
+
+	@Bindable
+	public String getAskerName() {
+		return mQuestion.getAskerName();
+	}
+
+	@Bindable
+	public String getAskerPicture() {
+		return mQuestion.getAskerPicture();
+	}
+
 	public ViewDataBinding getBinding() {
 		return mBinding;
 	}
@@ -80,6 +99,14 @@ public class QuestionViewModel extends RecyclerView.ViewHolder implements Observ
 		if (mCallbacks != null) {
 			mCallbacks.notifyCallbacks(this, fieldId, null);
 		}
+	}
+
+	@BindingAdapter({"bind:askerPicture"})
+	public static void loadAskerPicture(ImageView view, String askerPicture) {
+		Picasso.with(view.getContext())
+				.load(askerPicture)
+				.placeholder(R.drawable.user)
+				.into(view);
 	}
 
 }

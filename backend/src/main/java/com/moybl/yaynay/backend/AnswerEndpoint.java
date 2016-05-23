@@ -6,7 +6,7 @@ import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.api.server.spi.response.UnauthorizedException;
 
-import com.moybl.yaynay.backend.auth.AuthUser;
+import com.moybl.yaynay.backend.auth.AskerUser;
 import com.moybl.yaynay.backend.auth.YayNayAuthenticator;
 import com.moybl.yaynay.backend.model.Answer;
 import com.moybl.yaynay.backend.model.Asker;
@@ -25,7 +25,7 @@ public class AnswerEndpoint extends YayNayEndpoint {
 			throw new UnauthorizedException("Unauthorized");
 		}
 
-		Asker asker = ((AuthUser) user).getAsker();
+		Asker asker = ((AskerUser) user).getAsker();
 
 		Question question = OfyService.ofy()
 				.load()

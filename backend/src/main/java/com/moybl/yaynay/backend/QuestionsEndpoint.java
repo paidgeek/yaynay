@@ -10,13 +10,12 @@ import com.google.appengine.api.datastore.QueryResultIterator;
 import com.google.api.server.spi.auth.common.User;
 
 import com.googlecode.objectify.cmd.Query;
-import com.moybl.yaynay.backend.auth.AuthUser;
+import com.moybl.yaynay.backend.auth.AskerUser;
 import com.moybl.yaynay.backend.auth.YayNayAuthenticator;
 import com.moybl.yaynay.backend.model.Asker;
 import com.moybl.yaynay.backend.model.Question;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -36,11 +35,14 @@ public class QuestionsEndpoint extends YayNayEndpoint {
 			throw new UnauthorizedException("Unauthorized");
 		}
 
-		Asker asker = ((AuthUser) user).getAsker();
+		Asker asker = ((AskerUser) user).getAsker();
 
 		Question question = new Question();
 		question.setAskedAt(new Date());
 		question.setAskerId(asker.getId());
+		question.setAskerName(asker.getName());
+		question.setAskerDisplayName(asker.getDisplayName());
+		question.setAskerPicture(asker.getPicture());
 		question.setText(text);
 
 		asker.setQuestionCount(asker.getQuestionCount() + 1);
@@ -99,7 +101,7 @@ public class QuestionsEndpoint extends YayNayEndpoint {
 		}
 
 		if (askerId == null) {
-			askerId = ((AuthUser) user).getAsker()
+			askerId = ((AskerUser) user).getAsker()
 					.getId();
 		}
 

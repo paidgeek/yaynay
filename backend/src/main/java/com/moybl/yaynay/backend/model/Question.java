@@ -16,6 +16,7 @@ public class Question {
 	private String text;
 	private String askerName;
 	private String askerDisplayName;
+	private String askerPicture;
 	@Index
 	private Long askerId;
 	private long yayCount = 0;
@@ -55,6 +56,14 @@ public class Question {
 
 	public void setAskerDisplayName(String askerDisplayName) {
 		this.askerDisplayName = askerDisplayName;
+	}
+
+	public String getAskerPicture() {
+		return askerPicture;
+	}
+
+	public void setAskerPicture(String askerPicture) {
+		this.askerPicture = askerPicture;
 	}
 
 	public Long getAskerId() {

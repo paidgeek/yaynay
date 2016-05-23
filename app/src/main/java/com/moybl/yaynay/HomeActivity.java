@@ -70,7 +70,7 @@ public class HomeActivity extends AppCompatActivity {
 	}
 
 	private void refreshQuestions() {
-		mClient.listByAsker(new YayNayResultCallback<ObjectResult<List<Question>>>() {
+		mClient.feed(new YayNayResultCallback<ObjectResult<List<Question>>>() {
 			@Override
 			public void onResult(@NonNull ObjectResult<List<Question>> result) {
 				if (result.isSuccess()) {

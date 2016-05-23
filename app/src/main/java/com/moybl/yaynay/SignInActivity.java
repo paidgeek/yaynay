@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 
 import com.moybl.yaynay.backend.ObjectResult;
@@ -102,6 +103,8 @@ public class SignInActivity extends AppCompatActivity {
 		YayNayClient yayNayClient = YayNayClient.getInstance();
 		yayNayClient.setContext(this);
 		yayNayClient.setIdToken(idToken);
+
+		Log.d("TOKEN", idToken);
 
 		yayNayClient.insertGoogle(new YayNayResultCallback<ObjectResult<Asker>>() {
 			@Override

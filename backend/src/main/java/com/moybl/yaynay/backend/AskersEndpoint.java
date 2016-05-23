@@ -9,6 +9,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 
+import com.moybl.yaynay.backend.auth.AskerUser;
 import com.moybl.yaynay.backend.auth.GoogleAuthenticator;
 import com.moybl.yaynay.backend.model.Asker;
 
@@ -26,18 +27,22 @@ public class AskersEndpoint extends YayNayEndpoint {
 			throw new UnauthorizedException("Unauthorized");
 		}
 
+		Asker askerUser = ((AskerUser) user).getAsker();
+
 		Asker asker = OfyService.ofy()
 				.load()
 				.type(Asker.class)
-				.filter("googleId", user.getId())
+				.filter("googleId", askerUser.getGoogleId())
 				.first()
 				.now();
 
 		if (asker == null) {
 			asker = new Asker();
 
-			asker.setGoogleId(user.getId());
-			asker.setEmail(user.getEmail());
+			asker.setGoogleId(askerUser.getGoogleId());
+			asker.setEmail(askerUser.getEmail());
+			asker.setDisplayName(askerUser.getDisplayName());
+			asker.setPicture(askerUser.getPicture());
 		}
 
 		asker.setSessionToken(Util.generateSessionToken());
