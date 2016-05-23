@@ -13,6 +13,7 @@ import com.moybl.yaynay.backend.VoidResult;
 import com.moybl.yaynay.backend.YayNayClient;
 import com.moybl.yaynay.backend.YayNayResultCallback;
 import com.moybl.yaynay.backend.yayNay.model.Question;
+import com.moybl.yaynay.view.QuestionsAdapter;
 
 import java.util.List;
 
