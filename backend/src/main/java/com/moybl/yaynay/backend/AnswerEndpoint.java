@@ -5,6 +5,8 @@ import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
 import com.google.api.server.spi.response.NotFoundException;
 import com.google.api.server.spi.response.UnauthorizedException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 
 import com.moybl.yaynay.backend.auth.AskerUser;
 import com.moybl.yaynay.backend.auth.YayNayAuthenticator;
@@ -26,11 +28,12 @@ public class AnswerEndpoint extends YayNayEndpoint {
 		}
 
 		Asker asker = ((AskerUser) user).getAsker();
+		Key questionKey = KeyFactory.createKey("Question", questionId);
 
 		Question question = OfyService.ofy()
 				.load()
 				.type(Question.class)
-				.filterKey(questionId)
+				.filterKey(questionKey)
 				.first()
 				.now();
 

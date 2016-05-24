@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -118,7 +119,8 @@ public class SignInActivity extends AppCompatActivity {
 		});
 	}
 
-	public void onGoogleSignInClick(View view) {
+	@OnClick(R.id.google_sign_in_button)
+	public void onGoogleSignInClick() {
 		Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
 		startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
 	}

@@ -2,6 +2,7 @@
 <layout xmlns:app="http://schemas.android.com/tools">
 	<data>
 		<import type="com.moybl.yaynay.Util"/>
+		<import type="android.view.View"/>
 		<variable name="question"
 					 type="com.moybl.yaynay.view.QuestionViewModel"/>
 	</data>
@@ -87,6 +88,40 @@
 							android:text="@{question.text, default=text}"/>
 				</LinearLayout>
 			</LinearLayout>
+
+			<LinearLayout
+					android:orientation="horizontal"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent">
+				<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@{String.valueOf(question.yayCount)}"/>
+				<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="/"/>
+				<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:text="@{String.valueOf(question.nayCount)}"/>
+			</LinearLayout>
+			<LinearLayout
+					android:visibility="@{question.yayCount > 0 || question.nayCount > 0 ? View.VISIBLE : View.GONE}"
+					android:orientation="horizontal"
+					android:layout_height="5dp"
+					android:layout_width="match_parent"
+					android:weightSum="1.0"
+					android:background="@color/nay">
+				<LinearLayout
+						android:layout_width="0dp"
+						android:layout_height="match_parent"
+						android:layout_weight="0.5"
+						android:background="@color/yay"
+						app:answerWeight="@{question.answerWeight}">
+				</LinearLayout>
+			</LinearLayout>
+
 			<LinearLayout
 					android:orientation="horizontal"
 					android:layout_width="match_parent"
@@ -97,7 +132,7 @@
 						android:layout_height="match_parent"
 						android:text="@string/yay"
 						android:textColor="@android:color/darker_gray"
-						android:onClick="@{question.onYayClick}"
+						android:onClick="@{question::onYayClick}"
 						android:background="?android:attr/selectableItemBackground"
 						android:layout_weight="1"/>
 				<Button
@@ -107,7 +142,7 @@
 						android:textColor="@android:color/darker_gray"
 						android:text="@string/nay"
 						android:background="?android:attr/selectableItemBackground"
-						android:onClick="@{question.onNayClick}"
+						android:onClick="@{question::onNayClick}"
 						android:layout_weight="1"/>
 			</LinearLayout>
 		</LinearLayout>
